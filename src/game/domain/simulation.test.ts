@@ -3,10 +3,9 @@ import { createInitialGameState } from './gameState'
 import { isMissionComplete, simulateTo } from './simulation'
 
 describe('simulateTo', () => {
-  it('awards offline progress from elapsed wall-clock time', () => {
+  it('advances the authoritative timestamp', () => {
     const result = simulateTo(createInitialGameState(10_000), 70_000)
 
-    expect(result.points).toBe(60)
     expect(result.lastSimulatedAt).toBe(70_000)
   })
 

@@ -1,7 +1,7 @@
 {
   "name": "idle",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "packageManager": "pnpm@11.18.0",
   "scripts": {
@@ -20,7 +20,8 @@
     "roughjs": "^4.6.6",
     "semver": "^7.8.5",
     "tailwindcss": "^4.3.3",
-    "vue": "^3.5.42"
+    "vue": "^3.5.42",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^21.2.2",

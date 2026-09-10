@@ -12,7 +12,7 @@ describe('migrateSave', () => {
     })
   })
 
-  it('transforms the original numeric save format without losing progress', () => {
+  it('transforms the original numeric save format into worker slots', () => {
     const legacyState = {
       points: 42,
       pointsPerSecond: 1,
@@ -22,18 +22,18 @@ describe('migrateSave', () => {
     expect(migrateSave({ version: 1, state: legacyState })).toEqual({
       save: {
         version: CURRENT_SAVE_VERSION,
-        state: { ...legacyState, missions: [] },
+        state: { lastSimulatedAt: 1_000, missions: [], workerSlots: [null, null, null] },
       },
       migratedFrom: '0.0.0',
     })
   })
 
-  it('restamps an older compatible semantic version', () => {
-    const state = createInitialGameState(1_000)
+  it('migrates an older compatible semantic version', () => {
+    const state = { points: 4, pointsPerSecond: 1, lastSimulatedAt: 1_000, missions: [] }
 
     expect(migrateSave({ version: '0.0.5', state }).save).toEqual({
       version: CURRENT_SAVE_VERSION,
-      state,
+      state: createInitialGameState(1_000),
     })
   })
 

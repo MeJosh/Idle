@@ -29,6 +29,18 @@ const migrations: SaveMigration[] = [
       return { missions: [], ...state }
     },
   },
+  {
+    from: '<0.2.0',
+    to: '0.2.0',
+    transform(state) {
+      if (!state || typeof state !== 'object') return state
+      const { points: _points, pointsPerSecond: _pointsPerSecond, ...rest } = state as Record<
+        string,
+        unknown
+      >
+      return { ...rest, workerSlots: [null, null, null] }
+    },
+  },
 ]
 
 export class SaveMigrationError extends Error {

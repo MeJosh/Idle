@@ -6,15 +6,21 @@ export interface Mission {
   claimedAt?: number
 }
 
+export interface Worker {
+  id: string
+  name: string
+  role: string
+  specialty: string
+}
+
 export interface GameState {
-  points: number
-  pointsPerSecond: number
   lastSimulatedAt: number
   missions: Mission[]
+  workerSlots: Array<Worker | null>
 }
 
 export function createInitialGameState(now: number): GameState {
-  return { points: 0, pointsPerSecond: 1, lastSimulatedAt: now, missions: [] }
+  return { lastSimulatedAt: now, missions: [], workerSlots: [null, null, null] }
 }
 
 export function isGameState(value: unknown): value is GameState {
@@ -23,11 +29,13 @@ export function isGameState(value: unknown): value is GameState {
   const state = value as Partial<GameState>
 
   return (
-    isNonNegativeNumber(state.points) &&
-    isNonNegativeNumber(state.pointsPerSecond) &&
     isNonNegativeNumber(state.lastSimulatedAt) &&
     Array.isArray(state.missions) &&
-    state.missions.every(isMission)
+    state.missions.every(isMission) &&
+    Array.isArray(state.workerSlots) &&
+    state.workerSlots.length === 3 &&
+    state.workerSlots.every((worker) => worker === null || isWorker(worker)) &&
+    workersAreUnique(state.workerSlots)
   )
 }
 
@@ -47,4 +55,21 @@ function isMission(value: unknown): value is Mission {
     mission.completesAt >= mission.startedAt &&
     (mission.claimedAt === undefined || isNonNegativeNumber(mission.claimedAt))
   )
+}
+
+function isWorker(value: unknown): value is Worker {
+  if (!value || typeof value !== 'object') return false
+
+  const worker = value as Partial<Worker>
+  return (
+    typeof worker.id === 'string' &&
+    typeof worker.name === 'string' &&
+    typeof worker.role === 'string' &&
+    typeof worker.specialty === 'string'
+  )
+}
+
+function workersAreUnique(workerSlots: Array<Worker | null>): boolean {
+  const ids = workerSlots.flatMap((worker) => (worker ? [worker.id] : []))
+  return new Set(ids).size === ids.length
 }

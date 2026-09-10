@@ -4,14 +4,7 @@
 
 Game progress is calculated from elapsed timestamps, not from the number of timer callbacks received.
 
-For the initial generator:
-
-```text
-elapsedSeconds = max(0, now - lastSimulatedAt) / 1000
-earnedPoints   = elapsedSeconds * pointsPerSecond
-```
-
-After applying progress, `lastSimulatedAt` advances to `now`. Repeating a simulation at the same timestamp is therefore idempotent and cannot award the same time twice.
+For now, simulation advances `lastSimulatedAt` to `now`. Repeating a simulation at the same timestamp is therefore idempotent and cannot process the same time twice. There is no passive resource generation; later worker tasks can use this timestamp boundary for offline completion.
 
 ## Active and offline play
 
@@ -44,7 +37,7 @@ When systems become interdependent, use an ordered simulation pipeline. Each sys
 
 The current local server prevents negative elapsed time if the device clock moves backward. It cannot prevent a player from moving the clock forward; client-side authority is an architectural boundary, not an anti-cheat boundary.
 
-Points are currently JavaScript numbers and may be fractional internally while the UI rounds down for display. Before values exceed safe numeric ranges, choose and document a large-number representation. Do not mix representations across systems.
+Before future resource values exceed safe numeric ranges, choose and document a large-number representation. Do not mix representations across systems.
 
 ## Decisions still to make
 

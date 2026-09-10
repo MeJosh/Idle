@@ -38,6 +38,15 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  async function hireWorker(workerId: string) {
+    try {
+      state.value = await service.hireWorker(workerId)
+      error.value = null
+    } catch (cause) {
+      error.value = cause instanceof Error ? cause.message : 'The worker could not be hired.'
+    }
+  }
+
   function handleVisibilityChange() {
     if (document.visibilityState === 'visible') void sync()
   }
@@ -49,5 +58,5 @@ export const useGameStore = defineStore('game', () => {
     void sync()
   }
 
-  return { state, loading, error, start, stop, sync }
+  return { state, loading, error, start, stop, sync, hireWorker }
 })

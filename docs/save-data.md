@@ -6,7 +6,7 @@ Every local save uses a versioned envelope:
 
 ```json
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "state": {}
 }
 ```
@@ -39,6 +39,6 @@ Do not edit a released migration after users may have run it. Append a new corre
 
 ## Legacy saves and backups
 
-The original numeric save version (`1`) normalizes to semantic version `0.0.0` and migrates into the `0.1.0` schema. Missing mission data receives an empty mission list while existing points and timestamps are preserved.
+The original numeric save version (`1`) normalizes to semantic version `0.0.0`, gains mission data in the `0.1.0` migration, then migrates into the `0.2.0` worker schema. The obsolete point fields are removed and three empty worker slots are added while timestamps and missions are preserved.
 
 Before a migrated save is written, its original serialized value is copied from `idle-game:save` to `idle-game:save:backup`. The backup is replaced only by a later successful migration, not by routine saves.
