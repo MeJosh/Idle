@@ -36,3 +36,12 @@ export function hireWorker(state: GameState, workerId: string): GameState {
   workerSlots[openSlot] = { ...worker }
   return { ...state, workerSlots }
 }
+
+export function fireWorker(state: GameState, workerId: string): GameState {
+  const occupiedSlot = state.workerSlots.findIndex((worker) => worker?.id === workerId)
+  if (occupiedSlot === -1) throw new Error('That worker is not part of your crew.')
+
+  const workerSlots = [...state.workerSlots]
+  workerSlots[occupiedSlot] = null
+  return { ...state, workerSlots }
+}

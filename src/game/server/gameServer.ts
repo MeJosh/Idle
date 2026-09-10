@@ -1,6 +1,6 @@
 import { createInitialGameState, type GameState } from '../domain/gameState'
 import { simulateTo } from '../domain/simulation'
-import { hireWorker as hireWorkerInState } from '../domain/workers'
+import { fireWorker as fireWorkerInState, hireWorker as hireWorkerInState } from '../domain/workers'
 import type { GameRepository } from './gameRepository'
 
 export interface Clock {
@@ -47,5 +47,12 @@ export function createGameServer(repository: GameRepository, clock: Clock) {
     return snapshot()
   }
 
-  return { initialize, sync, hireWorker }
+  async function fireWorker(workerId: string): Promise<GameState> {
+    await initialize()
+    state = fireWorkerInState(simulateTo(state as GameState, clock.now()), workerId)
+    await repository.save(state)
+    return snapshot()
+  }
+
+  return { initialize, sync, hireWorker, fireWorker }
 }

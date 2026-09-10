@@ -5,4 +5,5 @@ export interface GameService {
   initialize(): Promise<GameState>
   sync(): Promise<GameState>
   hireWorker(workerId: string): Promise<GameState>
+  fireWorker(workerId: string): Promise<GameState>
 }

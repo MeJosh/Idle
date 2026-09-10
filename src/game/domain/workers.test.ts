@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { createInitialGameState } from './gameState'
-import { hireWorker, WORKER_CANDIDATES } from './workers'
+import { fireWorker, hireWorker, WORKER_CANDIDATES } from './workers'
 
 describe('hireWorker', () => {
   it('fills the first open worker slot', () => {
@@ -23,5 +23,21 @@ describe('hireWorker', () => {
 
     expect(() => hireWorker(state, 'anyone')).toThrow(/slots are full/)
     expect(state.workerSlots.every(Boolean)).toBe(true)
+  })
+})
+
+describe('fireWorker', () => {
+  it('clears the slot occupied by the worker', () => {
+    const hired = hireWorker(createInitialGameState(0), WORKER_CANDIDATES[0].id)
+
+    expect(fireWorker(hired, WORKER_CANDIDATES[0].id).workerSlots).toEqual([
+      null,
+      null,
+      null,
+    ])
+  })
+
+  it('rejects a worker who is not part of the crew', () => {
+    expect(() => fireWorker(createInitialGameState(0), 'unknown')).toThrow(/not part of your crew/)
   })
 })

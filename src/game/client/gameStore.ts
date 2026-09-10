@@ -47,6 +47,15 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
+  async function fireWorker(workerId: string) {
+    try {
+      state.value = await service.fireWorker(workerId)
+      error.value = null
+    } catch (cause) {
+      error.value = cause instanceof Error ? cause.message : 'The worker could not be fired.'
+    }
+  }
+
   function handleVisibilityChange() {
     if (document.visibilityState === 'visible') void sync()
   }
@@ -58,5 +67,5 @@ export const useGameStore = defineStore('game', () => {
     void sync()
   }
 
-  return { state, loading, error, start, stop, sync, hireWorker }
+  return { state, loading, error, start, stop, sync, hireWorker, fireWorker }
 })
