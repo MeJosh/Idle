@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import rough from 'roughjs'
 import type { Options } from 'roughjs/bin/core'
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -65,6 +65,11 @@ onMounted(async () => {
   observer = new ResizeObserver(scheduleDraw)
   if (container.value) observer.observe(container.value)
 })
+
+watch(
+  () => [props.stroke, props.fill, props.seed, props.roughness],
+  scheduleDraw,
+)
 
 onBeforeUnmount(() => {
   observer?.disconnect()
