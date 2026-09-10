@@ -9,6 +9,7 @@
 | Tailwind CSS | Responsive, utility-first styling |
 | `@tailwindcss/vite` | Tailwind's build integration for Vite |
 | Rough.js | Resize-aware, hand-drawn SVG decoration for the game interface |
+| semver | Standards-compliant save-version comparison and migration ranges |
 
 ## Development dependencies
 

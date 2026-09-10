@@ -64,4 +64,10 @@ Persisted data uses an explicit save version. Every schema change must either:
 - add a migration from every supported earlier version; or
 - intentionally invalidate saves with a documented product decision.
 
-Malformed local data currently falls back to a fresh game. Before real player progress matters, add recovery telemetry plus a backup/export path.
+The version written into each save is the semantic version from `package.json`. Compatible older state can be validated and restamped without a schema-specific transform. Incompatible older state must pass through ordered migrations before validation.
+
+Malformed or newer-version data is never silently reset or overwritten. A successful migration retains the original serialized save at `idle-game:save:backup` before writing the transformed state. See [Save data](./save-data.md) for the release and migration procedure.
+
+## UI preferences
+
+Presentation preferences are not part of authoritative game state. On first use, the color theme follows the operating-system preference. The binary Light/Dark toggle stores an explicit choice under the separate `idle-game:theme` local-storage key. Moving game state to an API must not move device-specific display preferences with it.

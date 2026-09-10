@@ -1,5 +1,3 @@
-export const SAVE_VERSION = 1 as const
-
 export interface Mission {
   id: string
   kind: string
@@ -15,24 +13,16 @@ export interface GameState {
   missions: Mission[]
 }
 
-export interface SaveData {
-  version: typeof SAVE_VERSION
-  state: GameState
-}
-
 export function createInitialGameState(now: number): GameState {
   return { points: 0, pointsPerSecond: 1, lastSimulatedAt: now, missions: [] }
 }
 
-export function isSaveData(value: unknown): value is SaveData {
+export function isGameState(value: unknown): value is GameState {
   if (!value || typeof value !== 'object') return false
 
-  const save = value as Partial<SaveData>
-  const state = save.state as Partial<GameState> | undefined
+  const state = value as Partial<GameState>
 
   return (
-    save.version === SAVE_VERSION &&
-    !!state &&
     isNonNegativeNumber(state.points) &&
     isNonNegativeNumber(state.pointsPerSecond) &&
     isNonNegativeNumber(state.lastSimulatedAt) &&

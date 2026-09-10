@@ -6,8 +6,10 @@ This directory records architectural decisions that should outlive individual im
 - [Technology stack](./technology-stack.md): dependencies and intentionally deferred libraries.
 - [Contributing](./contributing.md): package-manager and commit conventions.
 - [Simulation](./simulation.md): time advancement, offline progress, and mission timers.
+- [Save data](./save-data.md): semantic versions, migrations, validation, and backups.
 - [Delivery plan](./plan.md): staged framework and game-foundation work.
 - [ADR 0001](./decisions/0001-local-game-server.md): why the app has a client-side authoritative game server.
+- [ADR 0002](./decisions/0002-semantic-save-versions.md): how application versions govern save compatibility.
 
 ## Documentation conventions
 

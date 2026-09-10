@@ -16,7 +16,7 @@
 
 - Define explicit command types such as `startMission` and `claimMission`.
 - Serialize server commands to prevent overlapping writes.
-- Add save migrations and corrupted-save recovery behavior.
+- Add an explicit player-facing recovery/export flow for preserved invalid saves.
 - Add a multi-tab ownership or synchronization policy.
 - Add injectable in-memory repositories and server-level integration tests.
 - Decide offline caps, numeric precision, and clock policy.
