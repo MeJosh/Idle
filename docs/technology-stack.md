@@ -8,6 +8,7 @@
 | Pinia | Reactive client read models and command entry points |
 | Tailwind CSS | Responsive, utility-first styling |
 | `@tailwindcss/vite` | Tailwind's build integration for Vite |
+| Rough.js | Resize-aware, hand-drawn SVG decoration for the game interface |
 
 ## Development dependencies
 
