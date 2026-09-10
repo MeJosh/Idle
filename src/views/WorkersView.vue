@@ -64,7 +64,6 @@ async function confirmFire() {
             >
               <img class="size-4 invert" :src="crossIcon" alt="">
             </button>
-            <span v-else-if="!worker" class="text-2xl" aria-hidden="true">○</span>
           </div>
           <template v-if="worker">
             <div class="mt-7 grid size-14 place-items-center rounded-2xl bg-cyan-200 dark:bg-cyan-900" aria-hidden="true">
