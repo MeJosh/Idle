@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
+import settingsIcon from './assets/icons/8-ui/settings.svg'
 import RoughFrame from './components/RoughFrame.vue'
-import ThemeToggle from './components/ThemeToggle.vue'
 import { useGameStore } from './game/client/gameStore'
+import { useDevelopmentMode } from './ui/development/useDevelopmentMode'
+import { useKonamiCode } from './ui/development/useKonamiCode'
 import { useTheme } from './ui/theme/useTheme'
 
 const game = useGameStore()
 const { theme } = useTheme()
+const { toggleDevelopmentMode } = useDevelopmentMode()
+useKonamiCode(toggleDevelopmentMode)
 const roughPalette = computed(() =>
   theme.value === 'dark'
     ? { stroke: '#22d3ee', fill: 'rgb(2 6 23 / 0.86)' }
@@ -31,9 +35,16 @@ onUnmounted(() => game.stop())
                 <h1 class="mt-1 text-2xl font-black tracking-tight text-slate-950 dark:text-white">Build a crew. Keep it moving.</h1>
               </div>
             </div>
-            <div class="flex items-center justify-between gap-3 sm:justify-end">
-              <span class="text-sm font-bold text-emerald-700 dark:text-emerald-300">● Save secured</span>
-              <ThemeToggle />
+            <div class="flex items-center justify-end">
+              <RouterLink
+                class="grid size-11 place-items-center rounded-xl border-2 border-slate-300 bg-white/80 text-slate-800 shadow-sm transition hover:-translate-y-0.5 hover:border-cyan-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-600 dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-100 dark:hover:border-cyan-400"
+                active-class="settings-link-active"
+                aria-label="Open settings"
+                title="Settings"
+                to="/settings"
+              >
+                <img class="size-6 dark:invert" :src="settingsIcon" alt="">
+              </RouterLink>
             </div>
           </div>
           <nav class="mt-6 flex gap-2" aria-label="Workshop">

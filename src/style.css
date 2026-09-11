@@ -59,3 +59,13 @@ select {
 .dark .nav-tab { color: #94a3b8; }
 .dark .nav-tab:hover,
 .dark .nav-tab.router-link-active { border-color: #22d3ee; color: #67e8f9; }
+
+.settings-link-active {
+  border-color: #0891b2;
+  background-color: rgb(207 250 254 / 0.8);
+}
+
+.dark .settings-link-active {
+  border-color: #22d3ee;
+  background-color: rgb(8 51 68 / 0.9);
+}
