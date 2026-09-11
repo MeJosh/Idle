@@ -7,12 +7,14 @@ const props = withDefaults(
   defineProps<{
     stroke?: string
     fill?: string
+    fillStyle?: 'hachure' | 'solid'
     seed?: number
     roughness?: number
   }>(),
   {
     stroke: '#22d3ee',
     fill: 'transparent',
+    fillStyle: 'hachure',
     seed: 1,
     roughness: 1.4,
   },
@@ -38,7 +40,7 @@ function draw() {
 
   if (props.fill !== 'transparent') {
     options.fill = props.fill
-    options.fillStyle = 'hachure'
+    options.fillStyle = props.fillStyle
     options.fillWeight = 0.7
     options.hachureGap = 8
   }
@@ -67,7 +69,7 @@ onMounted(async () => {
 })
 
 watch(
-  () => [props.stroke, props.fill, props.seed, props.roughness],
+  () => [props.stroke, props.fill, props.fillStyle, props.seed, props.roughness],
   scheduleDraw,
 )
 

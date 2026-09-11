@@ -55,7 +55,13 @@ async function confirmFire() {
       <RoughFrame v-for="(worker, index) in slots" :key="worker?.id ?? index" :fill="worker ? 'rgb(34 211 238 / 0.08)' : 'rgb(148 163 184 / 0.06)'" :stroke="worker ? '#0891b2' : '#94a3b8'" :seed="71 + index * 19" :roughness="1.7">
         <article class="flex min-h-64 flex-col p-6">
           <div class="flex h-8 items-center justify-between">
-            <span class="text-xs font-black uppercase tracking-[0.18em] text-slate-500">Slot {{ index + 1 }}</span>
+            <h3 v-if="worker" class="text-xl font-black text-slate-950 dark:text-white">{{ worker.name }}</h3>
+            <span
+              v-if="!worker || !managingCrew"
+              class="ml-auto text-xs font-black uppercase tracking-[0.18em] text-slate-500"
+            >
+              Slot {{ index + 1 }}
+            </span>
             <button
               v-if="worker && managingCrew"
               class="absolute -right-2 -top-2 z-20 grid size-10 place-items-center rounded-full bg-red-600 shadow-lg shadow-red-950/25 transition hover:scale-105 hover:bg-red-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-500 dark:bg-red-700 dark:hover:bg-red-600"
@@ -66,11 +72,10 @@ async function confirmFire() {
             </button>
           </div>
           <template v-if="worker">
-            <div class="mt-7 grid size-14 place-items-center rounded-2xl bg-cyan-200 dark:bg-cyan-900" aria-hidden="true">
+            <div class="mt-5 grid size-14 place-items-center rounded-2xl bg-cyan-200 dark:bg-cyan-900" aria-hidden="true">
               <img class="size-10 opacity-75 dark:invert" :src="characterIcon" alt="">
             </div>
-            <h3 class="mt-4 text-xl font-black text-slate-950 dark:text-white">{{ worker.name }}</h3>
-            <p class="mt-1 font-bold text-fuchsia-700 dark:text-fuchsia-300">{{ worker.role }}</p>
+            <p class="mt-4 font-bold text-fuchsia-700 dark:text-fuchsia-300">{{ worker.role }}</p>
             <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{{ worker.specialty }}</p>
           </template>
           <template v-else>

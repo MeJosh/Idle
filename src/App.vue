@@ -10,8 +10,8 @@ const game = useGameStore()
 const { theme } = useTheme()
 const roughPalette = computed(() =>
   theme.value === 'dark'
-    ? { stroke: '#22d3ee', fill: 'rgb(15 23 42 / 0.38)' }
-    : { stroke: '#0891b2', fill: 'rgb(255 255 255 / 0.48)' },
+    ? { stroke: '#22d3ee', fill: 'rgb(2 6 23 / 0.86)' }
+    : { stroke: '#0891b2', fill: 'rgb(255 255 255 / 0.86)' },
 )
 
 onMounted(() => game.start())
@@ -20,8 +20,8 @@ onUnmounted(() => game.stop())
 
 <template>
   <main class="mx-auto min-h-svh w-full max-w-6xl px-4 py-8 sm:px-8 lg:px-12">
-    <RoughFrame class="w-full" :fill="roughPalette.fill" :stroke="roughPalette.stroke" :seed="17" :roughness="1.15">
-      <section class="m-2 overflow-hidden rounded-2xl bg-white/75 shadow-2xl shadow-cyan-800/15 dark:bg-slate-950/72 dark:shadow-cyan-950/40">
+    <RoughFrame class="w-full p-3 shadow-2xl shadow-cyan-800/15 dark:shadow-cyan-950/40" :fill="roughPalette.fill" fill-style="solid" :stroke="roughPalette.stroke" :seed="17" :roughness="1.15">
+      <section>
         <header class="border-b-2 border-dashed border-cyan-300/80 px-6 pt-5 sm:px-8 dark:border-cyan-900/60">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div class="flex items-center gap-4">
