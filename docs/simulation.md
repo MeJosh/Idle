@@ -1,5 +1,11 @@
 # Simulation
 
+## Hiring board
+
+The hiring board has three persisted slots. A candidate is generated for the first open board slot every 60 seconds, based on absolute timestamps, until the board is full. This means elapsed offline time fills the board without producing an unbounded backlog. Hiring from a full board restarts the one-minute arrival timer.
+
+Candidate names are assembled from `src/game/config/worker-names.txt`. Rarity is selected with the relative weights in `src/game/config/worker.cfg`; the values do not need to total 100.
+
 ## Core rule
 
 Game progress is calculated from elapsed timestamps, not from the number of timer callbacks received.
@@ -29,7 +35,7 @@ A mission is ready when `now >= completesAt` and it has not already been claimed
 
 ## Determinism
 
-Simulation functions accept `now` as an argument and return new state. They do not call `Date.now()`, access storage, or mutate their input. This makes them straightforward to test and portable to a future backend.
+Simulation functions accept `now` as an argument and return new state. They do not call `Date.now()`, access storage, or mutate their input. Random candidate generation accepts an injected random source for repeatable tests and uses `Math.random` by default in the local game server; generated candidates are then persisted in authoritative state. This keeps time behavior deterministic and makes random outcomes stable after they are created.
 
 When systems become interdependent, use an ordered simulation pipeline. Each system receives the state produced by the prior step. The order becomes a documented game rule and must be covered by tests.
 

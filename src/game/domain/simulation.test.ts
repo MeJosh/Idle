@@ -20,6 +20,18 @@ describe('simulateTo', () => {
 
     expect(simulateTo(state, 5_000)).toEqual(state)
   })
+
+  it('adds a generated candidate each minute until the hiring board is full', () => {
+    const result = simulateTo(createInitialGameState(0), 10 * 60_000, () => 0)
+
+    expect(result.hiringBoard.map((worker) => worker?.name)).toEqual([
+      'Ada Ash',
+      'Ada Ash',
+      'Ada Ash',
+    ])
+    expect(result.workerCandidateSequence).toBe(3)
+    expect(result.nextWorkerCandidateAt).toBeNull()
+  })
 })
 
 describe('isMissionComplete', () => {

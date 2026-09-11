@@ -4,6 +4,6 @@ import type { GameState } from '../domain/gameState'
 export interface GameService {
   initialize(): Promise<GameState>
   sync(): Promise<GameState>
-  hireWorker(workerId: string): Promise<GameState>
+  hireWorker(workerId: string, targetSlot?: number): Promise<GameState>
   fireWorker(workerId: string): Promise<GameState>
 }

@@ -1,31 +1,15 @@
-import type { GameState, Worker } from './gameState'
+import type { GameState } from './gameState'
+import { WORKER_CANDIDATE_INTERVAL_MS } from './workerGenerator'
 
-export const WORKER_CANDIDATES: readonly Worker[] = [
-  {
-    id: 'mara-vale',
-    name: 'Mara Vale',
-    role: 'Scavenger',
-    specialty: 'Finds useful parts in unlikely places.',
-  },
-  {
-    id: 'orin-pike',
-    name: 'Orin Pike',
-    role: 'Tinkerer',
-    specialty: 'Keeps temperamental machines running.',
-  },
-  {
-    id: 'sable-reed',
-    name: 'Sable Reed',
-    role: 'Courier',
-    specialty: 'Finishes delivery jobs ahead of schedule.',
-  },
-]
-
-export function hireWorker(state: GameState, workerId: string): GameState {
+export function hireWorker(state: GameState, workerId: string, targetSlot?: number): GameState {
   const openSlot = state.workerSlots.findIndex((slot) => slot === null)
-  if (openSlot === -1) throw new Error('All worker slots are full.')
+  const destination = targetSlot ?? openSlot
+  if (!Number.isInteger(destination) || destination < 0 || destination >= state.workerSlots.length) {
+    throw new Error(openSlot === -1 ? 'Choose a worker to replace.' : 'That worker slot does not exist.')
+  }
 
-  const worker = WORKER_CANDIDATES.find((candidate) => candidate.id === workerId)
+  const candidateSlot = state.hiringBoard.findIndex((candidate) => candidate?.id === workerId)
+  const worker = state.hiringBoard[candidateSlot]
   if (!worker) throw new Error('That worker is not available.')
 
   if (state.workerSlots.some((slot) => slot?.id === workerId)) {
@@ -33,8 +17,17 @@ export function hireWorker(state: GameState, workerId: string): GameState {
   }
 
   const workerSlots = [...state.workerSlots]
-  workerSlots[openSlot] = { ...worker }
-  return { ...state, workerSlots }
+  workerSlots[destination] = { ...worker }
+  const hiringBoard = [...state.hiringBoard]
+  hiringBoard[candidateSlot] = null
+
+  return {
+    ...state,
+    workerSlots,
+    hiringBoard,
+    nextWorkerCandidateAt:
+      state.nextWorkerCandidateAt ?? state.lastSimulatedAt + WORKER_CANDIDATE_INTERVAL_MS,
+  }
 }
 
 export function fireWorker(state: GameState, workerId: string): GameState {

@@ -1,7 +1,7 @@
 {
   "name": "idle",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "packageManager": "pnpm@11.18.0",
   "scripts": {
@@ -16,10 +16,13 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@primevue/icons": "^4.5.5",
     "@tailwindcss/vite": "^4.3.3",
     "pinia": "^4.0.3",
+    "primevue": "^4.5.5",
     "roughjs": "^4.6.6",
     "semver": "^7.8.5",
+    "tailwind-merge": "^3.6.0",
     "tailwindcss": "^4.3.3",
     "vue": "^3.5.42",
     "vue-router": "^4.6.4"

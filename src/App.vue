@@ -7,6 +7,7 @@ import { useGameStore } from './game/client/gameStore'
 import { useDevelopmentMode } from './ui/development/useDevelopmentMode'
 import { useKonamiCode } from './ui/development/useKonamiCode'
 import { useTheme } from './ui/theme/useTheme'
+import Toast from './volt/Toast.vue'
 
 const game = useGameStore()
 const { theme } = useTheme()
@@ -23,6 +24,7 @@ onUnmounted(() => game.stop())
 </script>
 
 <template>
+  <Toast position="bottom-right" />
   <main class="mx-auto min-h-svh w-full max-w-6xl px-4 py-8 sm:px-8 lg:px-12">
     <RoughFrame class="w-full p-3 shadow-2xl shadow-cyan-800/15 dark:shadow-cyan-950/40" :fill="roughPalette.fill" fill-style="solid" :stroke="roughPalette.stroke" :seed="17" :roughness="1.15">
       <section>

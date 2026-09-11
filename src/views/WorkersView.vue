@@ -3,31 +3,38 @@ import { computed, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import characterIcon from '../assets/icons/1-game/character.svg'
 import crossIcon from '../assets/icons/8-ui/cross.svg'
+import exclamationIcon from '../assets/icons/8-ui/exclamation.svg'
 import RoughFrame from '../components/RoughFrame.vue'
 import { useGameStore } from '../game/client/gameStore'
 import type { Worker } from '../game/domain/gameState'
+import { RARITY_COLORS } from '../game/domain/workerGenerator'
+import Dialog from '../volt/Dialog.vue'
 
 const game = useGameStore()
 const slots = computed(() => game.state?.workerSlots ?? [null, null, null])
 const filledSlots = computed(() => slots.value.filter(Boolean).length)
 const managingCrew = ref(false)
 const workerToFire = ref<Worker | null>(null)
-const confirmationDialog = ref<HTMLDialogElement | null>(null)
+const confirmationDialogVisible = ref(false)
 
 function requestFire(worker: Worker) {
   workerToFire.value = worker
-  confirmationDialog.value?.showModal()
+  confirmationDialogVisible.value = true
 }
 
 function cancelFire() {
-  confirmationDialog.value?.close()
+  confirmationDialogVisible.value = false
 }
 
 async function confirmFire() {
   if (!workerToFire.value) return
   await game.fireWorker(workerToFire.value.id)
-  confirmationDialog.value?.close()
+  confirmationDialogVisible.value = false
   if (filledSlots.value === 0) managingCrew.value = false
+}
+
+function clearWorkerToFire() {
+  workerToFire.value = null
 }
 </script>
 
@@ -75,7 +82,15 @@ async function confirmFire() {
             <div class="mt-5 grid size-14 place-items-center rounded-2xl bg-cyan-200 dark:bg-cyan-900" aria-hidden="true">
               <img class="size-10 opacity-75 dark:invert" :src="characterIcon" alt="">
             </div>
-            <p class="mt-4 font-bold text-fuchsia-700 dark:text-fuchsia-300">{{ worker.role }}</p>
+            <div class="mt-4 flex items-center justify-between gap-3">
+              <p class="font-bold text-fuchsia-700 dark:text-fuchsia-300">{{ worker.role }}</p>
+              <span
+                class="rounded-full border px-2.5 py-1 text-xs font-black uppercase tracking-wider text-slate-900"
+                :style="{ backgroundColor: RARITY_COLORS[worker.rarity].hex, borderColor: RARITY_COLORS[worker.rarity].hex }"
+              >
+                {{ worker.rarity }}
+              </span>
+            </div>
             <p class="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{{ worker.specialty }}</p>
           </template>
           <template v-else>
@@ -96,29 +111,36 @@ async function confirmFire() {
     </div>
   </section>
 
-  <Teleport to="body">
-    <dialog
-      ref="confirmationDialog"
-      class="m-auto w-[calc(100%-2rem)] max-w-md rounded-2xl border-2 border-red-300 bg-white p-0 text-slate-900 shadow-2xl backdrop:bg-slate-950/75 dark:border-red-900 dark:bg-slate-900 dark:text-white"
-      aria-labelledby="fire-worker-title"
-      @cancel="workerToFire = null"
-      @close="workerToFire = null"
-    >
-      <div class="p-6 sm:p-7">
-        <div class="grid size-12 place-items-center rounded-xl bg-red-100 text-2xl text-red-700 dark:bg-red-950 dark:text-red-300" aria-hidden="true">!</div>
-        <h2 id="fire-worker-title" class="mt-5 text-2xl font-black">Fire {{ workerToFire?.name }}?</h2>
-        <p class="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">
-          This will remove {{ workerToFire?.name }} from your crew and leave their worker slot empty.
-        </p>
-        <div class="mt-7 flex justify-end gap-3">
-          <button class="rounded-xl border-2 border-slate-300 px-4 py-2 font-black text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" @click="cancelFire">
-            Keep worker
-          </button>
-          <button class="rounded-xl bg-red-500 px-4 py-2 font-black text-white transition hover:bg-red-400" @click="confirmFire">
-            Fire worker
-          </button>
+  <Dialog
+    v-model:visible="confirmationDialogVisible"
+    modal
+    :show-header="false"
+    :pt="{
+      content: { class: 'p-0' },
+      mask: { class: 'bg-slate-950/75' },
+    }"
+    class="m-auto w-[calc(100%-2rem)] !max-w-md !rounded-2xl !border-2 !border-red-300 !bg-white !p-0 !text-slate-900 !shadow-2xl dark:!border-red-900 dark:!bg-slate-900 dark:!text-white"
+    aria-labelledby="fire-worker-title"
+    @after-hide="clearWorkerToFire"
+  >
+    <div class="p-6 sm:p-7">
+      <div class="flex items-center gap-3">
+        <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-red-100 dark:bg-red-950" aria-hidden="true">
+          <img class="size-5 opacity-70 dark:invert" :src="exclamationIcon" alt="">
         </div>
+        <h2 id="fire-worker-title" class="text-2xl font-black">Fire {{ workerToFire?.name }}?</h2>
       </div>
-    </dialog>
-  </Teleport>
+      <p class="mt-3 leading-relaxed text-slate-600 dark:text-slate-300">
+        This will remove {{ workerToFire?.name }} from your crew and leave their worker slot empty.
+      </p>
+      <div class="mt-7 flex justify-end gap-3">
+        <button class="rounded-xl border-2 border-slate-300 px-4 py-2 font-black text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800" @click="cancelFire">
+          Cancel
+        </button>
+        <button class="rounded-xl bg-red-500 px-4 py-2 font-black text-white transition hover:bg-red-400" @click="confirmFire">
+          Remove
+        </button>
+      </div>
+    </div>
+  </Dialog>
 </template>

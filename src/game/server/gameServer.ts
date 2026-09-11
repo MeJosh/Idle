@@ -40,9 +40,9 @@ export function createGameServer(repository: GameRepository, clock: Clock) {
     return snapshot()
   }
 
-  async function hireWorker(workerId: string): Promise<GameState> {
+  async function hireWorker(workerId: string, targetSlot?: number): Promise<GameState> {
     await initialize()
-    state = hireWorkerInState(simulateTo(state as GameState, clock.now()), workerId)
+    state = hireWorkerInState(simulateTo(state as GameState, clock.now()), workerId, targetSlot)
     await repository.save(state)
     return snapshot()
   }

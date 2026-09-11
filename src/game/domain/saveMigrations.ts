@@ -1,6 +1,7 @@
 import { gt, lte, satisfies, valid } from 'semver'
 import { APP_VERSION } from '../../version'
 import { isGameState, type GameState } from './gameState'
+import { WORKER_CANDIDATE_INTERVAL_MS } from './workerGenerator'
 
 export const CURRENT_SAVE_VERSION = APP_VERSION
 
@@ -39,6 +40,30 @@ const migrations: SaveMigration[] = [
         unknown
       >
       return { ...rest, workerSlots: [null, null, null] }
+    },
+  },
+  {
+    from: '<0.3.0',
+    to: '0.3.0',
+    transform(state) {
+      if (!state || typeof state !== 'object') return state
+      const record = state as Record<string, unknown>
+      const lastSimulatedAt =
+        typeof record.lastSimulatedAt === 'number' ? record.lastSimulatedAt : 0
+      const workerSlots = Array.isArray(record.workerSlots)
+        ? record.workerSlots.map((worker) => {
+            if (!worker || typeof worker !== 'object') return worker
+            return { ...(worker as Record<string, unknown>), rarity: 'Common' }
+          })
+        : record.workerSlots
+
+      return {
+        ...record,
+        workerSlots,
+        hiringBoard: [null, null, null],
+        nextWorkerCandidateAt: lastSimulatedAt + WORKER_CANDIDATE_INTERVAL_MS,
+        workerCandidateSequence: 0,
+      }
     },
   },
 ]

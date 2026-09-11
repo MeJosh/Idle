@@ -1,40 +1,55 @@
 import { describe, expect, it } from 'vitest'
 import { createInitialGameState } from './gameState'
-import { fireWorker, hireWorker, WORKER_CANDIDATES } from './workers'
+import { simulateTo } from './simulation'
+import { fireWorker, hireWorker } from './workers'
+
+const alwaysFirst = () => 0
+
+function stateWithCandidates(count = 1) {
+  return simulateTo(createInitialGameState(0), count * 60_000, alwaysFirst)
+}
 
 describe('hireWorker', () => {
-  it('fills the first open worker slot', () => {
-    const result = hireWorker(createInitialGameState(0), WORKER_CANDIDATES[0].id)
+  it('fills the first open worker slot and removes the candidate from the board', () => {
+    const state = stateWithCandidates()
+    const candidate = state.hiringBoard[0]!
+    const result = hireWorker(state, candidate.id)
 
-    expect(result.workerSlots).toEqual([WORKER_CANDIDATES[0], null, null])
+    expect(result.workerSlots).toEqual([candidate, null, null])
+    expect(result.hiringBoard).toEqual([null, null, null])
   })
 
-  it('does not hire the same worker twice', () => {
-    const state = hireWorker(createInitialGameState(0), WORKER_CANDIDATES[0].id)
+  it('replaces the selected worker when all slots are full', () => {
+    let state = stateWithCandidates(3)
+    for (const candidate of [...state.hiringBoard]) state = hireWorker(state, candidate!.id)
+    state = simulateTo(state, 240_000, alwaysFirst)
+    const replacement = state.hiringBoard[0]!
 
-    expect(() => hireWorker(state, WORKER_CANDIDATES[0].id)).toThrow(/already works here/)
+    const result = hireWorker(state, replacement.id, 1)
+
+    expect(result.workerSlots[1]).toEqual(replacement)
   })
 
-  it('stops hiring when all three slots are full', () => {
-    const state = WORKER_CANDIDATES.reduce(
-      (current, worker) => hireWorker(current, worker.id),
-      createInitialGameState(0),
-    )
+  it('requires a replacement choice when all slots are full', () => {
+    let state = stateWithCandidates(3)
+    for (const candidate of [...state.hiringBoard]) state = hireWorker(state, candidate!.id)
+    state = simulateTo(state, 240_000, alwaysFirst)
 
-    expect(() => hireWorker(state, 'anyone')).toThrow(/slots are full/)
-    expect(state.workerSlots.every(Boolean)).toBe(true)
+    expect(() => hireWorker(state, state.hiringBoard[0]!.id)).toThrow(/Choose a worker to replace/)
+  })
+
+  it('rejects a worker who is not on the hiring board', () => {
+    expect(() => hireWorker(createInitialGameState(0), 'unknown')).toThrow(/not available/)
   })
 })
 
 describe('fireWorker', () => {
   it('clears the slot occupied by the worker', () => {
-    const hired = hireWorker(createInitialGameState(0), WORKER_CANDIDATES[0].id)
+    const state = stateWithCandidates()
+    const candidate = state.hiringBoard[0]!
+    const hired = hireWorker(state, candidate.id)
 
-    expect(fireWorker(hired, WORKER_CANDIDATES[0].id).workerSlots).toEqual([
-      null,
-      null,
-      null,
-    ])
+    expect(fireWorker(hired, candidate.id).workerSlots).toEqual([null, null, null])
   })
 
   it('rejects a worker who is not part of the crew', () => {

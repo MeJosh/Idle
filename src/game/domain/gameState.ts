@@ -1,3 +1,5 @@
+import { WORKER_CANDIDATE_INTERVAL_MS } from './workerGenerator'
+
 export interface Mission {
   id: string
   kind: string
@@ -11,16 +13,29 @@ export interface Worker {
   name: string
   role: string
   specialty: string
+  rarity: WorkerRarity
 }
+
+export type WorkerRarity = 'Common' | 'Uncommon' | 'Rare' | 'Epic'
 
 export interface GameState {
   lastSimulatedAt: number
   missions: Mission[]
   workerSlots: Array<Worker | null>
+  hiringBoard: Array<Worker | null>
+  nextWorkerCandidateAt: number | null
+  workerCandidateSequence: number
 }
 
 export function createInitialGameState(now: number): GameState {
-  return { lastSimulatedAt: now, missions: [], workerSlots: [null, null, null] }
+  return {
+    lastSimulatedAt: now,
+    missions: [],
+    workerSlots: [null, null, null],
+    hiringBoard: [null, null, null],
+    nextWorkerCandidateAt: now + WORKER_CANDIDATE_INTERVAL_MS,
+    workerCandidateSequence: 0,
+  }
 }
 
 export function isGameState(value: unknown): value is GameState {
@@ -35,7 +50,13 @@ export function isGameState(value: unknown): value is GameState {
     Array.isArray(state.workerSlots) &&
     state.workerSlots.length === 3 &&
     state.workerSlots.every((worker) => worker === null || isWorker(worker)) &&
-    workersAreUnique(state.workerSlots)
+    Array.isArray(state.hiringBoard) &&
+    state.hiringBoard.length === 3 &&
+    state.hiringBoard.every((worker) => worker === null || isWorker(worker)) &&
+    (state.nextWorkerCandidateAt === null || isNonNegativeNumber(state.nextWorkerCandidateAt)) &&
+    Number.isSafeInteger(state.workerCandidateSequence) &&
+    (state.workerCandidateSequence ?? -1) >= 0 &&
+    workersAreUnique([...state.workerSlots, ...state.hiringBoard])
   )
 }
 
@@ -65,8 +86,13 @@ function isWorker(value: unknown): value is Worker {
     typeof worker.id === 'string' &&
     typeof worker.name === 'string' &&
     typeof worker.role === 'string' &&
-    typeof worker.specialty === 'string'
+    typeof worker.specialty === 'string' &&
+    isWorkerRarity(worker.rarity)
   )
+}
+
+function isWorkerRarity(value: unknown): value is WorkerRarity {
+  return value === 'Common' || value === 'Uncommon' || value === 'Rare' || value === 'Epic'
 }
 
 function workersAreUnique(workerSlots: Array<Worker | null>): boolean {

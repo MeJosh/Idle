@@ -38,9 +38,9 @@ export const useGameStore = defineStore('game', () => {
     }
   }
 
-  async function hireWorker(workerId: string) {
+  async function hireWorker(workerId: string, targetSlot?: number) {
     try {
-      state.value = await service.hireWorker(workerId)
+      state.value = await service.hireWorker(workerId, targetSlot)
       error.value = null
     } catch (cause) {
       error.value = cause instanceof Error ? cause.message : 'The worker could not be hired.'

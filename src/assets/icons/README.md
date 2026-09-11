@@ -6,7 +6,7 @@ and bundles SVGs imported from here.
 Add an icon from the complete source library with:
 
 ```sh
-pnpm icon:add -- <category>/<icon>.svg
+pnpm icon:add <category>/<icon>.svg
 ```
 
 Pass `--padding` before the icon path to select the padded variant. The command
